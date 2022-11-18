@@ -96,6 +96,8 @@ public class DialogueManager : MonoBehaviour
 
         dialogueVariables.StartListening(currentStory);
 
+        Variables.Object(gameObject).Set("dialogueIsPlaying", dialogueIsPlaying);
+
         displayNameText.text = "???";
         portraitAnimator.Play("default");
     }
