@@ -76,13 +76,16 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
+        // return right awa if dialogue isn't playing
         if (!dialogueIsPlaying)
         {
             Variables.Object(gameObject).Set("dialogueIsPlaying", dialogueIsPlaying);
             return;
         }
-        
-        if (currentStory.currentChoices.Count == 0
+
+        // handle continuing to the next line in the dialogue when submit is pressed
+        // The bug appeared when I add canContinueToNextLine in below
+        if (canContinueToNextLine && currentStory.currentChoices.Count == 0
             && InputManager.GetInstance().GetSubmitPressed())
         {
             ContinueStory();
@@ -133,6 +136,7 @@ public class DialogueManager : MonoBehaviour
         else
         {
             StartCoroutine(ExitDialogueMode());
+            Debug.Log("exit dialogue");
         }
     }
 
@@ -141,7 +145,8 @@ public class DialogueManager : MonoBehaviour
         // empty the dialogue text
         dialogueText.text = "";
 
-        //canContinueToNextLine = false;
+        canContinueToNextLine = false;
+        Debug.Log("canContinueToNextLine set to false");
 
         // display each letter one at a time
         foreach (char letter in line.ToCharArray())
@@ -150,7 +155,8 @@ public class DialogueManager : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
 
-        //canContinueToNextLine = true;
+        canContinueToNextLine = true;
+        Debug.Log("canContinueToNextLine set to true");
     }
     private void HandleTags(List<string> currentTags)
     {
@@ -223,7 +229,7 @@ public class DialogueManager : MonoBehaviour
 
     public void MakeChoice(int choiceIndex)
     {
-        if (true)
+        if (canContinueToNextLine)
         {
             currentStory.ChooseChoiceIndex(choiceIndex);
             InputManager.GetInstance().RegisterSubmitPressed();
