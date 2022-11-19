@@ -115,8 +115,6 @@ public class DialogueManager : MonoBehaviour
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
         dialogueText.text = "";
-
-        ContinueStory();
     }
 
     private void ContinueStory()
