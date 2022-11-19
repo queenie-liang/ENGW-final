@@ -22,6 +22,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private TextMeshProUGUI displayNameText;
     [SerializeField] private Animator portraitAnimator;
+    [SerializeField] private GameObject continueIcon;
 
     [Header("Choices UI")]
 
@@ -32,7 +33,7 @@ public class DialogueManager : MonoBehaviour
     private Story currentStory;
     public bool dialogueIsPlaying { get; private set; }
 
-    private bool canContinueToNextLine = false;
+    private bool canContinueToNextLine = true;
     private Coroutine displayLineCoroutine;
 
     private static DialogueManager instance;
@@ -128,8 +129,6 @@ public class DialogueManager : MonoBehaviour
                 StopCoroutine(displayLineCoroutine);
             }
             displayLineCoroutine = StartCoroutine(DisplayLine(currentStory.Continue()));
-            // display choices, if any, for this dialogue line
-            DisplayChoices();
             //handle tags
             HandleTags(currentStory.currentTags);
         }
@@ -145,6 +144,10 @@ public class DialogueManager : MonoBehaviour
         // empty the dialogue text
         dialogueText.text = "";
 
+        // hide items while text is typing
+        continueIcon.SetActive(false);
+        HideChoices();
+
         canContinueToNextLine = false;
         Debug.Log("canContinueToNextLine set to false");
 
@@ -155,8 +158,20 @@ public class DialogueManager : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
 
+        continueIcon.SetActive(true);
+        // display choices, if any, for this dialogue line
+        DisplayChoices();
+
         canContinueToNextLine = true;
         Debug.Log("canContinueToNextLine set to true");
+    }
+
+    private void HideChoices()
+    {
+        foreach (GameObject choiceButton in choices)
+        {
+            choiceButton.SetActive(false);
+        }
     }
     private void HandleTags(List<string> currentTags)
     {
